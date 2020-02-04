@@ -1,0 +1,44 @@
+{
+  "private": false,
+  "author": "shubham digole",
+  "license": "ISC",
+  "name": "styled-buttons-testing",
+  "version": "2.2.6",
+  "description": " This Vue Component is created for setting timer, getting events and setting intevral just use <styled-testing-button :interval='5' inputclass='btn' :timeObject='{hours:10, minutes:40}' v-on:hours='emittedHours' v-on:minutes='emittedMinutes'></styled-testing-button>",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "vue serve StyledButtonsTesting.vue",
+    "build": "bili --name index --plugin vue --vue.css false"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "devDependencies": {
+    "bili": "^4.8.1",
+    "rollup-plugin-vue": "^5.1.6",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-console": "off"
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "bootstrap-vue": "^2.4.0",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.16.1",
+    "vue": "^2.6.11"
+  }
+}
