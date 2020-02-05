@@ -15,8 +15,8 @@ export default {
         time: {
             type: Object,
             default: () => ({
-                hours: 0,
-                minutes: 0
+                hours: "00",
+                minutes: "01"
             })
         }
     },
@@ -55,7 +55,8 @@ export default {
     data() {
         return {
             value: this.interval,
-            mins: [0],
+            mins: [],
+            hour:[],
             displayMinutes: false
         };
 
@@ -75,6 +76,17 @@ export default {
         hideDialog(){
                this.displayMinutes = false;
         },
+        insertHours(){
+            for (let i = 0; i < 12; i++) {
+                if(i < 10 ){
+                    this.hour.push("0" + i)
+                }
+                else{
+                    this.hour.push(i)
+                } 
+
+            }
+        },
         setMinutes() {
             if (this.value !== 5 && this.value !== 1 && this.value !== 10 && this.value !== 15) {
                 this.value = 1;
@@ -85,9 +97,14 @@ export default {
             if (this.time.minutes % this.value !== 0) {
                 this.time.minutes = 0;
             }
-            for (let i = 1; i <= 59; i++) {
+            for (let i = 0; i <= 59; i++) {
                 if (i % this.value == 0) {
-                    this.mins.push(i)
+                    if (i < 10) {
+                        this.mins.push("0"+i)
+                    } else {
+                        this.mins.push(i)    
+                    }
+                    
                 }
             }
            
@@ -96,27 +113,17 @@ export default {
     watch:{
         time:{
             handler: function () {
-                this.$emit('selectTime', this.time)
+                this.$emit('selectTime')
               },
               deep: true
         }
     },
     computed: {
        
-        formatHours(){
-            if (this.time.hours < 10){
-              return "0" + this.time.hours;
-            }
-            return this.time.hours
-        },
-        formatMinutes(){
-            if (this.time.minutes < 10){
-              return "0" + this.time.minutes;
-            }
-            return this.time.minutes
-          }
+       
     },
     mounted() {
+        this.insertHours();
         this.setMinutes();
     }
 

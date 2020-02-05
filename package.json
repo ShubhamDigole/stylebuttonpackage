@@ -3,7 +3,7 @@
   "author": "shubham digole",
   "license": "ISC",
   "name": "styled-buttons-testing",
-  "version": "2.2.8",
+  "version": "3.0.4",
   "description": " This Vue Component is created for setting Timer. Setting Events, Minutes Intevral and Classes As Per Requirements",
   "main": "./dist/index.js",
   "scripts": {
@@ -27,6 +27,7 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
+    
     "rules": {
       "no-console": "off"
     },

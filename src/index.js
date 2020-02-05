@@ -1,7 +1,7 @@
 import TimePicker from "./TimePicker.vue";
 
 export default {
-    install(Vue) {
+    install(Vue, options) {
         Vue.component("TimePicker", TimePicker);
     }
 }

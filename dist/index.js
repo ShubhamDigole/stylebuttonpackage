@@ -1,5 +1,5 @@
 /*!
- * styled-buttons-testing v2.2.7
+ * styled-buttons-testing v3.0.4
  * (c) shubham digole
  * Released under the ISC License.
  */
@@ -20,8 +20,8 @@ var script = {
       type: Object,
       "default": function _default() {
         return {
-          hours: 0,
-          minutes: 0
+          hours: "00",
+          minutes: "01"
         };
       }
     }
@@ -64,7 +64,8 @@ var script = {
   data: function data() {
     return {
       value: this.interval,
-      mins: [0],
+      mins: [],
+      hour: [],
       displayMinutes: false
     };
   },
@@ -82,6 +83,15 @@ var script = {
     hideDialog: function hideDialog() {
       this.displayMinutes = false;
     },
+    insertHours: function insertHours() {
+      for (var i = 0; i < 12; i++) {
+        if (i < 10) {
+          this.hour.push("0" + i);
+        } else {
+          this.hour.push(i);
+        }
+      }
+    },
     setMinutes: function setMinutes() {
       if (this.value !== 5 && this.value !== 1 && this.value !== 10 && this.value !== 15) {
         this.value = 1;
@@ -95,9 +105,13 @@ var script = {
         this.time.minutes = 0;
       }
 
-      for (var i = 1; i <= 59; i++) {
+      for (var i = 0; i <= 59; i++) {
         if (i % this.value == 0) {
-          this.mins.push(i);
+          if (i < 10) {
+            this.mins.push("0" + i);
+          } else {
+            this.mins.push(i);
+          }
         }
       }
     }
@@ -105,28 +119,14 @@ var script = {
   watch: {
     time: {
       handler: function handler() {
-        this.$emit('selectTime', this.time);
+        this.$emit('selectTime');
       },
       deep: true
     }
   },
-  computed: {
-    formatHours: function formatHours() {
-      if (this.time.hours < 10) {
-        return "0" + this.time.hours;
-      }
-
-      return this.time.hours;
-    },
-    formatMinutes: function formatMinutes() {
-      if (this.time.minutes < 10) {
-        return "0" + this.time.minutes;
-      }
-
-      return this.time.minutes;
-    }
-  },
+  computed: {},
   mounted: function mounted() {
+    this.insertHours();
     this.setMinutes();
   }
 };
@@ -291,7 +291,7 @@ var __vue_render__ = function __vue_render__() {
       "readonly": ""
     },
     domProps: {
-      "value": _vm.formatHours + ' : ' + _vm.formatMinutes
+      "value": this.time.hours + ' : ' + this.time.minutes
     },
     on: {
       "click": _vm.openDialog
@@ -318,13 +318,13 @@ var __vue_render__ = function __vue_render__() {
         return _vm.hoursChanged($event.target.value);
       }]
     }
-  }, _vm._l(12, function (n) {
+  }, _vm._l(_vm.hour, function (n) {
     return _c('option', {
       key: n,
       domProps: {
-        "value": n - 1
+        "value": n
       }
-    }, [n - 1 <= 9 ? _c('span', [_vm._v(" 0" + _vm._s(n - 1) + " ")]) : _vm._e(), n - 1 > 9 ? _c('span', [_vm._v(" " + _vm._s(n - 1) + " ")]) : _vm._e()]);
+    }, [_vm._v(" \r\n            " + _vm._s(n) + " \r\n        ")]);
   }), 0), _vm._v(" "), _c('select', {
     directives: [{
       name: "model",
@@ -353,7 +353,7 @@ var __vue_render__ = function __vue_render__() {
       domProps: {
         "value": n
       }
-    }, [n < 10 ? _c('span', [_vm._v(" 0" + _vm._s(n) + " ")]) : _vm._e(), n > 9 ? _c('span', [_vm._v(" " + _vm._s(n) + " ")]) : _vm._e()]);
+    }, [_vm._v("\r\n           " + _vm._s(n) + "\r\n        ")]);
   }), 0)]) : _vm._e()]);
 };
 
@@ -362,8 +362,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-049db58b_0", {
-    source: ".btn[data-v-049db58b]{border:1px solid gray}#colon[data-v-049db58b]{margin-top:10px;margin-left:10px;font-size:40px}input[data-v-049db58b]{padding-left:15px;width:88px}select[data-v-049db58b]{width:43px;padding:1px}",
+  inject("data-v-45cc0988_0", {
+    source: ".btn[data-v-45cc0988]{border:1px solid gray}#colon[data-v-45cc0988]{margin-top:10px;margin-left:10px;font-size:40px}input[data-v-45cc0988]{padding-left:15px;width:88px}select[data-v-45cc0988]{width:43px;padding:1px}",
     map: undefined,
     media: undefined
   });
@@ -371,7 +371,7 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-049db58b";
+var __vue_scope_id__ = "data-v-45cc0988";
 /* module identifier */
 
 var __vue_module_identifier__ = undefined;
@@ -388,7 +388,7 @@ var __vue_component__ = normalizeComponent({
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, createInjector, undefined, undefined);
 
 var index = {
-  install: function install(Vue) {
+  install: function install(Vue, options) {
     Vue.component("TimePicker", __vue_component__);
   }
 };

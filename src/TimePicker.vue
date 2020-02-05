@@ -1,22 +1,20 @@
 <template >
 
-<div v-click-outside="hideDialog" :>
+<div v-click-outside="hideDialog">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
-    <!-- <input type="text" class="form-control form-control-sm" :class="inputclass" v-model="value" v-on:input="$emit('data', $event.target.value)"> -->
-  
-    <!-- <button >click</button> -->
     <div>
-    <input type="input" class="form-control" :value=" formatHours + ' : ' +  formatMinutes" readonly v-on:click="openDialog">
+    <input type="input" class="form-control" :value=" this.time.hours + ' : ' +  this.time.minutes" readonly v-on:click="openDialog">
     </div>
     <div v-if="displayMinutes" >
     <select class="form-control btn-group" v-model="time.hours"  v-on:change="hoursChanged($event.target.value)">
-        <option v-for="n in 12" :key="n" :value="n - 1" ><span v-if="n-1 <=9 "> 0{{ n -1 }} </span><span v-if="n-1 > 9"> {{ n -1 }} </span></option>
+        <option v-for="n in hour" :key="n" :value="n" > 
+            {{ n }} 
+        </option>
     </select>
   
     <select class="form-control btn-group" v-model="time.minutes"  v-on:change="minutesChanged($event.target.value)">
         <option v-for="n in this.mins" :key="n" :value="n">
-            <span v-if="n < 10"> 0{{ n }} </span><span v-if="n > 9"> {{ n }} </span>
+           {{n}}
         </option>
     </select>
     </div>
