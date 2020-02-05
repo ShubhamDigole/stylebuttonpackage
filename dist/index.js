@@ -1,28 +1,63 @@
 /*!
- * styled-buttons-testing v2.2.6
+ * styled-buttons-testing v2.2.7
  * (c) shubham digole
  * Released under the ISC License.
  */
 'use strict';
 
 var script = {
-  name: 'Search',
+  name: 'TimePicker',
   props: {
     interval: {
       type: Number,
-      "default": 5
+      "default": 1
     },
-    inputclass: {
+    inputClass: {
       type: String,
       "default": 'btn'
     },
-    timeObject: {
+    time: {
       type: Object,
       "default": function _default() {
         return {
           hours: 0,
-          minutes: 13
+          minutes: 0
         };
+      }
+    }
+  },
+  directives: {
+    'click-outside': {
+      bind: function bind(el, binding, vNode) {
+        // Provided expression must evaluate to a function.
+        if (typeof binding.value !== 'function') {
+          var compName = vNode.context.name;
+          var warn = "[Vue-click-outside:] provided expression '".concat(binding.expression, "' is not a function, but has to be");
+
+          if (compName) {
+            warn += "Found in component '".concat(compName, "'");
+          }
+
+          console.warn(warn);
+        } // Define Handler and cache it on the element
+
+
+        var bubble = binding.modifiers.bubble;
+
+        var handler = function handler(e) {
+          if (bubble || !el.contains(e.target) && el !== e.target) {
+            binding.value(e);
+          }
+        };
+
+        el.__vueClickOutside__ = handler; // add Event Listeners
+
+        document.addEventListener('click', handler);
+      },
+      unbind: function unbind(el) {
+        // Remove Event Listeners
+        document.removeEventListener('click', el.__vueClickOutside__);
+        el.__vueClickOutside__ = null;
       }
     }
   },
@@ -38,30 +73,26 @@ var script = {
       this.displayMinutes = true;
     },
     hoursChanged: function hoursChanged(value) {
-      this.$emit('hours', value);
+      this.$emit('selectHours', value);
     },
     minutesChanged: function minutesChanged(value) {
       this.displayMinutes = false;
-      this.$emit('minutes', value);
-    } // hideDialog(){
-    //    if (this.displayMinutes) {
-    //        this.displayMinutes = false;
-    //    }
-    // }
-
-  },
-  computed: {
+      this.$emit('selectMinutes', value);
+    },
+    hideDialog: function hideDialog() {
+      this.displayMinutes = false;
+    },
     setMinutes: function setMinutes() {
       if (this.value !== 5 && this.value !== 1 && this.value !== 10 && this.value !== 15) {
         this.value = 1;
       }
 
-      if (this.timeObject.hours > 11) {
-        this.timeObject.hours = 0;
+      if (this.time.hours > 11) {
+        this.time.hours = 0;
       }
 
-      if (this.timeObject.minutes % this.value !== 0) {
-        this.timeObject.minutes = 0;
+      if (this.time.minutes % this.value !== 0) {
+        this.time.minutes = 0;
       }
 
       for (var i = 1; i <= 59; i++) {
@@ -71,10 +102,32 @@ var script = {
       }
     }
   },
-  mounted: function mounted() {
-    this.setMinutes; // document.addEventListener('click', this.hideDialog);
+  watch: {
+    time: {
+      handler: function handler() {
+        this.$emit('selectTime', this.time);
+      },
+      deep: true
+    }
   },
-  beforeDestroy: function beforeDestroy() {// document.removeEventListener('click', this.hideDialog);
+  computed: {
+    formatHours: function formatHours() {
+      if (this.time.hours < 10) {
+        return "0" + this.time.hours;
+      }
+
+      return this.time.hours;
+    },
+    formatMinutes: function formatMinutes() {
+      if (this.time.minutes < 10) {
+        return "0" + this.time.minutes;
+      }
+
+      return this.time.minutes;
+    }
+  },
+  mounted: function mounted() {
+    this.setMinutes();
   }
 };
 
@@ -217,34 +270,40 @@ var __vue_render__ = function __vue_render__() {
 
   var _c = _vm._self._c || _h;
 
-  return _c('div', [_c('link', {
+  return _c('div', {
+    directives: [{
+      name: "click-outside",
+      rawName: "v-click-outside",
+      value: _vm.hideDialog,
+      expression: "hideDialog"
+    }]
+  }, [_c('link', {
     attrs: {
       "rel": "stylesheet",
       "href": "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css",
       "integrity": "sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh",
       "crossorigin": "anonymous"
     }
-  }), _vm._v(" "), _c('input', {
+  }), _vm._v(" "), _c('div', [_c('input', {
+    staticClass: "form-control",
     attrs: {
-      "type": "form-control",
-      "disabled": ""
+      "type": "input",
+      "readonly": ""
     },
     domProps: {
-      "value": _vm.timeObject.hours + ' : ' + _vm.timeObject.minutes
-    }
-  }), _vm._v(" "), _c('button', {
-    staticClass: "btn btn-danger",
+      "value": _vm.formatHours + ' : ' + _vm.formatMinutes
+    },
     on: {
       "click": _vm.openDialog
     }
-  }, [_vm._v(" Set Time")]), _vm._v(" "), _c('br'), _vm._v(" "), _vm.displayMinutes ? _c('select', {
+  })]), _vm._v(" "), _vm.displayMinutes ? _c('div', [_c('select', {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.timeObject.hours,
-      expression: "timeObject.hours"
+      value: _vm.time.hours,
+      expression: "time.hours"
     }],
-    "class": _vm.inputclass,
+    staticClass: "form-control btn-group",
     on: {
       "change": [function ($event) {
         var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
@@ -254,7 +313,7 @@ var __vue_render__ = function __vue_render__() {
           return val;
         });
 
-        _vm.$set(_vm.timeObject, "hours", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+        _vm.$set(_vm.time, "hours", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
       }, function ($event) {
         return _vm.hoursChanged($event.target.value);
       }]
@@ -266,14 +325,14 @@ var __vue_render__ = function __vue_render__() {
         "value": n - 1
       }
     }, [n - 1 <= 9 ? _c('span', [_vm._v(" 0" + _vm._s(n - 1) + " ")]) : _vm._e(), n - 1 > 9 ? _c('span', [_vm._v(" " + _vm._s(n - 1) + " ")]) : _vm._e()]);
-  }), 0) : _vm._e(), _vm._v(" "), _vm.displayMinutes ? _c('select', {
+  }), 0), _vm._v(" "), _c('select', {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.timeObject.minutes,
-      expression: "timeObject.minutes"
+      value: _vm.time.minutes,
+      expression: "time.minutes"
     }],
-    "class": _vm.inputclass,
+    staticClass: "form-control btn-group",
     on: {
       "change": [function ($event) {
         var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
@@ -283,7 +342,7 @@ var __vue_render__ = function __vue_render__() {
           return val;
         });
 
-        _vm.$set(_vm.timeObject, "minutes", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+        _vm.$set(_vm.time, "minutes", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
       }, function ($event) {
         return _vm.minutesChanged($event.target.value);
       }]
@@ -295,7 +354,7 @@ var __vue_render__ = function __vue_render__() {
         "value": n
       }
     }, [n < 10 ? _c('span', [_vm._v(" 0" + _vm._s(n) + " ")]) : _vm._e(), n > 9 ? _c('span', [_vm._v(" " + _vm._s(n) + " ")]) : _vm._e()]);
-  }), 0) : _vm._e()]);
+  }), 0)]) : _vm._e()]);
 };
 
 var __vue_staticRenderFns__ = [];
@@ -303,8 +362,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-70dd1814_0", {
-    source: ".btn[data-v-70dd1814]{border:1px solid gray}#colon[data-v-70dd1814]{margin-top:10px;margin-left:10px;font-size:40px}",
+  inject("data-v-049db58b_0", {
+    source: ".btn[data-v-049db58b]{border:1px solid gray}#colon[data-v-049db58b]{margin-top:10px;margin-left:10px;font-size:40px}input[data-v-049db58b]{padding-left:15px;width:88px}select[data-v-049db58b]{width:43px;padding:1px}",
     map: undefined,
     media: undefined
   });
@@ -312,7 +371,7 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-70dd1814";
+var __vue_scope_id__ = "data-v-049db58b";
 /* module identifier */
 
 var __vue_module_identifier__ = undefined;
@@ -329,8 +388,8 @@ var __vue_component__ = normalizeComponent({
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, createInjector, undefined, undefined);
 
 var index = {
-  install: function install(Vue, options) {
-    Vue.component("styled-testing-button", __vue_component__);
+  install: function install(Vue) {
+    Vue.component("TimePicker", __vue_component__);
   }
 };
 
